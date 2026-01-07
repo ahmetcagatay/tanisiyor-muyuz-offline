@@ -184,31 +184,6 @@
       gap: 30px;
     }
 
-    .card-wrapper {
-      position: relative;
-      width: 320px;
-      height: 320px;
-    }
-
-    .sunflower {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 5em;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      pointer-events: none;
-    }
-
-    .sunflower.visible {
-      opacity: 0.3;
-    }
-
     .card {
       background-color: #fff8ec;
       border-radius: 20px;
@@ -346,10 +321,7 @@
   <div class="subheader" id="subheader">Önyargını Kır</div>
 
   <div class="game-container">
-    <div class="card-wrapper">
-      <div class="sunflower" id="sunflower">🌻</div>
-      <div id="questionDisplay" class="card hidden"></div>
-    </div>
+    <div id="questionDisplay" class="card hidden"></div>
 
     <div class="buttons-container">
       <button class="cta-button" id="nextLevelBtn" disabled>Sonraki Aşamaya Geç</button>
@@ -799,7 +771,6 @@
     const subheader = document.getElementById("subheader");
     const nextLevelBtn = document.getElementById("nextLevelBtn");
     const prevLevelLink = document.getElementById("prevLevelLink");
-    const sunflower = document.getElementById("sunflower");
 
     // Popup Elementleri
     const popupOverlay = document.getElementById("popupOverlay");
@@ -912,9 +883,6 @@
       }
 
       if (!questionDisplay.classList.contains('hidden')) {
-        // Ayçiçeğini göster
-        sunflower.classList.add('visible');
-
         questionDisplay.style.animation = "fadeOut 0.5s ease";
         questionDisplay.addEventListener('animationend', function handleFadeOut() {
           questionDisplay.removeEventListener('animationend', handleFadeOut);
@@ -934,12 +902,6 @@
         questionDisplay.textContent = randomQuestion;
         questionDisplay.classList.remove('hidden');
         questionDisplay.style.animation = "fadeIn 0.5s ease forwards";
-
-        // Ayçiçeğini gizle
-        setTimeout(() => {
-          sunflower.classList.remove('visible');
-        }, 300);
-
         updateButtonState();
       }
     }
