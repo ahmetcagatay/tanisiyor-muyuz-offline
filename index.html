@@ -66,7 +66,7 @@
 
     .info-button {
       position: fixed;
-      top: 20px;
+      bottom: 20px;
       right: 20px;
       width: 32px;
       height: 32px;
@@ -864,11 +864,16 @@
         }
       });
 
-      // Popup göster
-      showPopup();
-
       // Soruları karıştır
       shuffleQuestions();
+
+      // Popup göster (sadece bu aşama daha önce geçilmediyse)
+      if (!achievements[level]) {
+        showPopup();
+      } else {
+        // Achievement varsa direkt soruyu göster
+        generateQuestion();
+      }
     }
 
     // Popup butonuna tıklayınca
