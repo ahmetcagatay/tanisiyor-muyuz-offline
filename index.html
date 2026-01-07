@@ -184,6 +184,32 @@
       gap: 30px;
     }
 
+    .card-wrapper {
+      position: relative;
+      width: 320px;
+      height: 320px;
+    }
+
+    .sunflowers {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4em;
+      gap: 10px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .sunflowers.visible {
+      opacity: 1;
+    }
+
     .card {
       background-color: #fff8ec;
       border-radius: 20px;
@@ -321,7 +347,14 @@
   <div class="subheader" id="subheader">Önyargını Kır</div>
 
   <div class="game-container">
-    <div id="questionDisplay" class="card hidden"></div>
+    <div class="card-wrapper">
+      <div class="sunflowers" id="sunflowers">
+        <span>🌻</span>
+        <span>🌻</span>
+        <span>🌻</span>
+      </div>
+      <div id="questionDisplay" class="card hidden"></div>
+    </div>
 
     <div class="buttons-container">
       <button class="cta-button" id="nextLevelBtn" disabled>Sonraki Aşamaya Geç</button>
@@ -771,6 +804,7 @@
     const subheader = document.getElementById("subheader");
     const nextLevelBtn = document.getElementById("nextLevelBtn");
     const prevLevelLink = document.getElementById("prevLevelLink");
+    const sunflowers = document.getElementById("sunflowers");
 
     // Popup Elementleri
     const popupOverlay = document.getElementById("popupOverlay");
@@ -883,6 +917,9 @@
       }
 
       if (!questionDisplay.classList.contains('hidden')) {
+        // Ayçiçeklerini göster
+        sunflowers.classList.add('visible');
+
         questionDisplay.style.animation = "fadeOut 0.5s ease";
         questionDisplay.addEventListener('animationend', function handleFadeOut() {
           questionDisplay.removeEventListener('animationend', handleFadeOut);
@@ -902,6 +939,12 @@
         questionDisplay.textContent = randomQuestion;
         questionDisplay.classList.remove('hidden');
         questionDisplay.style.animation = "fadeIn 0.5s ease forwards";
+
+        // Ayçiçeklerini gizle
+        setTimeout(() => {
+          sunflowers.classList.remove('visible');
+        }, 300);
+
         updateButtonState();
       }
     }
