@@ -32,7 +32,7 @@
     }
 
     body.level-3 {
-      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
     }
 
     .header {
@@ -44,34 +44,35 @@
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    .subheader {
-      color: #fff8ec;
-      font-size: 1.3em;
-      font-weight: 400;
-      margin-bottom: 15px;
-      text-align: center;
-      opacity: 0.9;
-    }
-
-    .description {
-      color: #fff8ec;
-      font-size: 1em;
-      font-weight: 300;
-      margin-bottom: 30px;
-      text-align: center;
-      opacity: 0.85;
-      max-width: 400px;
-      line-height: 1.5;
-    }
-
-    .level-indicator {
-      position: fixed;
-      top: 20px;
-      right: 20px;
+    .pre-header {
       color: #fff8ec;
       font-size: 1em;
       font-weight: 500;
+      margin-bottom: 5px;
+      text-align: center;
       opacity: 0.9;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .subheader {
+      color: #fff8ec;
+      font-size: 1.8em;
+      font-weight: 700;
+      margin-bottom: 15px;
+      text-align: center;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .description {
+      color: #fff;
+      font-size: 1.05em;
+      font-weight: 400;
+      margin-bottom: 30px;
+      text-align: center;
+      max-width: 380px;
+      line-height: 1.6;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
     }
 
     .game-container {
@@ -102,7 +103,7 @@
 
     body.level-1 .card { color: #FDA203; }
     body.level-2 .card { color: #764ba2; }
-    body.level-3 .card { color: #11998e; }
+    body.level-3 .card { color: #ee5a24; }
 
     .card:hover {
       transform: translateY(-2px);
@@ -149,7 +150,7 @@
       font-weight: 600;
       font-family: 'Helvetica Neue', Arial, sans-serif;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       text-decoration: none;
       display: inline-block;
@@ -158,17 +159,23 @@
 
     body.level-1 .cta-button { color: #FDA203; }
     body.level-2 .cta-button { color: #764ba2; }
-    body.level-3 .cta-button { color: #11998e; }
+    body.level-3 .cta-button { color: #ee5a24; }
 
-    .cta-button:hover {
+    .cta-button:hover:not(:disabled) {
       transform: translateY(-2px);
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
       background-color: #fffbf5;
     }
 
-    .cta-button:active {
+    .cta-button:active:not(:disabled) {
       transform: translateY(0);
       box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .cta-button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
     }
 
     .buttons-container {
@@ -201,27 +208,19 @@
       background-color: #fff8ec;
       transform: scale(1.2);
     }
-
-    .question-counter {
-      color: #fff8ec;
-      font-size: 0.9em;
-      opacity: 0.8;
-      margin-top: 10px;
-    }
   </style>
 </head>
 <body class="level-1">
-  <div class="level-indicator" id="levelIndicator">1. Aşama</div>
-
   <div class="header">Tanışıyor muyuz?</div>
-  <div class="subheader" id="subheader">1. Aşama: Önyargını Kır</div>
+  <div class="pre-header" id="preHeader">1. Aşama</div>
+  <div class="subheader" id="subheader">Önyargını Kır</div>
   <div class="description" id="description"></div>
 
   <div class="game-container">
     <div id="questionDisplay" class="card hidden"></div>
 
     <div class="buttons-container">
-      <button class="cta-button" id="nextLevelBtn">Sonraki Aşamaya Geç</button>
+      <button class="cta-button" id="nextLevelBtn" disabled>Sonraki Aşamaya Geç</button>
     </div>
 
     <div class="progress-dots">
@@ -229,8 +228,6 @@
       <div class="dot" data-level="2"></div>
       <div class="dot" data-level="3"></div>
     </div>
-
-    <div class="question-counter" id="questionCounter"></div>
   </div>
 
   <script>
@@ -660,14 +657,14 @@
     let currentLevel = 1;
     let remainingQuestions = [];
     let askedQuestions = [];
+    const MIN_QUESTIONS = 10;
 
     // DOM Elementleri
     const questionDisplay = document.getElementById("questionDisplay");
+    const preHeader = document.getElementById("preHeader");
     const subheader = document.getElementById("subheader");
     const descriptionEl = document.getElementById("description");
-    const levelIndicator = document.getElementById("levelIndicator");
     const nextLevelBtn = document.getElementById("nextLevelBtn");
-    const questionCounter = document.getElementById("questionCounter");
     const dots = document.querySelectorAll(".dot");
 
     // Sayfa yüklendiğinde
@@ -684,13 +681,19 @@
       document.body.className = `level-${level}`;
 
       // Başlıkları güncelle
-      subheader.textContent = `${level}. Aşama: ${levelData[level].name}`;
+      preHeader.textContent = `${level}. Aşama`;
+      subheader.textContent = levelData[level].name;
       descriptionEl.textContent = levelData[level].description;
-      levelIndicator.textContent = `${level}. Aşama`;
 
       // Buton metnini güncelle
-      const nextLevel = level === 3 ? 1 : level + 1;
-      nextLevelBtn.textContent = `Sonraki: ${nextLevel}. Aşama - ${levelData[nextLevel].name}`;
+      if (level === 3) {
+        nextLevelBtn.textContent = "Baştan Başla";
+      } else {
+        nextLevelBtn.textContent = "Sonraki Aşamaya Geç";
+      }
+
+      // Butonu devre dışı bırak
+      nextLevelBtn.disabled = true;
 
       // Progress dots güncelle
       dots.forEach(dot => {
@@ -712,10 +715,10 @@
       }
     }
 
-    function updateCounter() {
-      const total = levelData[currentLevel].questions.length;
-      const asked = askedQuestions.length;
-      questionCounter.textContent = `${asked}/${total} soru`;
+    function updateButtonState() {
+      if (askedQuestions.length >= MIN_QUESTIONS) {
+        nextLevelBtn.disabled = false;
+      }
     }
 
     function generateQuestion() {
@@ -746,7 +749,7 @@
         questionDisplay.textContent = randomQuestion;
         questionDisplay.classList.remove('hidden');
         questionDisplay.style.animation = "fadeIn 0.5s ease forwards";
-        updateCounter();
+        updateButtonState();
       }
     }
 
