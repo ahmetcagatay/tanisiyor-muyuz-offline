@@ -301,29 +301,6 @@
       text-decoration: underline;
     }
 
-    .progress-dots {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background-color: rgba(255, 248, 236, 0.4);
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
-
-    .dot:hover {
-      background-color: rgba(255, 248, 236, 0.7);
-    }
-
-    .dot.active {
-      background-color: #fff8ec;
-      transform: scale(1.2);
-    }
   </style>
 </head>
 <body class="level-1">
@@ -349,12 +326,6 @@
     <div class="buttons-container">
       <button class="cta-button" id="nextLevelBtn" disabled>Sonraki Aşamaya Geç</button>
       <span class="prev-level-link" id="prevLevelLink">Önceki aşamaya dön</span>
-    </div>
-
-    <div class="progress-dots">
-      <div class="dot active" data-level="1"></div>
-      <div class="dot" data-level="2"></div>
-      <div class="dot" data-level="3"></div>
     </div>
   </div>
 
@@ -800,7 +771,6 @@
     const subheader = document.getElementById("subheader");
     const nextLevelBtn = document.getElementById("nextLevelBtn");
     const prevLevelLink = document.getElementById("prevLevelLink");
-    const dots = document.querySelectorAll(".dot");
 
     // Popup Elementleri
     const popupOverlay = document.getElementById("popupOverlay");
@@ -855,14 +825,6 @@
 
       // Butonu devre dışı bırak (eğer bu aşama daha önce geçilmediyse)
       nextLevelBtn.disabled = !achievements[level];
-
-      // Progress dots güncelle
-      dots.forEach(dot => {
-        dot.classList.remove("active");
-        if (parseInt(dot.dataset.level) === level) {
-          dot.classList.add("active");
-        }
-      });
 
       // Soruları karıştır
       shuffleQuestions();
@@ -959,16 +921,6 @@
     prevLevelLink.addEventListener("click", () => {
       const prevLevel = currentLevel === 1 ? 3 : currentLevel - 1;
       initLevel(prevLevel);
-    });
-
-    // Dot'lara tıklayınca ilgili aşamaya git
-    dots.forEach(dot => {
-      dot.addEventListener("click", () => {
-        const level = parseInt(dot.dataset.level);
-        if (level !== currentLevel) {
-          initLevel(level);
-        }
-      });
     });
   </script>
 </body>
