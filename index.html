@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tanışıyor muyuz?</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      transition: background 0.5s ease;
+    }
+
+    /* Level Temaları */
+    body.level-1 {
+      background: linear-gradient(135deg, #FECB00 0%, #FDA203 100%);
+    }
+
+    body.level-2 {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    body.level-3 {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+
+    .header {
+      color: #fff8ec;
+      font-size: 2.5em;
+      font-weight: 600;
+      margin-bottom: 10px;
+      text-align: center;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .subheader {
+      color: #fff8ec;
+      font-size: 1.3em;
+      font-weight: 400;
+      margin-bottom: 40px;
+      text-align: center;
+      opacity: 0.9;
+    }
+
+    .level-indicator {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      color: #fff8ec;
+      font-size: 1em;
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 40px;
+    }
+
+    .card {
+      background-color: #fff8ec;
+      border-radius: 20px;
+      padding: 40px;
+      height: 320px;
+      width: 320px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      font-size: 1.3em;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.5s ease;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    body.level-1 .card { color: #FDA203; }
+    body.level-2 .card { color: #764ba2; }
+    body.level-3 .card { color: #11998e; }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    .card:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes fadeOut {
+      0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+      }
+    }
+
+    .cta-button {
+      background-color: #fff8ec;
+      border: none;
+      border-radius: 15px;
+      padding: 15px 30px;
+      font-size: 1.1em;
+      font-weight: 600;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-decoration: none;
+      display: inline-block;
+      margin: 10px;
+    }
+
+    body.level-1 .cta-button { color: #FDA203; }
+    body.level-2 .cta-button { color: #764ba2; }
+    body.level-3 .cta-button { color: #11998e; }
+
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+      background-color: #fffbf5;
+    }
+
+    .cta-button:active {
+      transform: translateY(0);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .buttons-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .progress-dots {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: rgba(255, 248, 236, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .dot.active {
+      background-color: #fff8ec;
+      transform: scale(1.2);
+    }
+
+    .question-counter {
+      color: #fff8ec;
+      font-size: 0.9em;
+      opacity: 0.8;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body class="level-1">
+  <div class="level-indicator" id="levelIndicator">Level 1/3</div>
+
+  <div class="header">Tanışıyor muyuz?</div>
+  <div class="subheader" id="subheader">Level 1: Isınma Soruları</div>
+
+  <div class="game-container">
+    <div id="questionDisplay" class="card hidden"></div>
+
+    <div class="buttons-container">
+      <button class="cta-button" id="nextLevelBtn">Sonraki Aşamaya Geç</button>
+    </div>
+
+    <div class="progress-dots">
+      <div class="dot active" data-level="1"></div>
+      <div class="dot" data-level="2"></div>
+      <div class="dot" data-level="3"></div>
+    </div>
+
+    <div class="question-counter" id="questionCounter"></div>
+  </div>
+
+  <script>
+    // Level Soruları
+    const levelData = {
+      1: {
+        name: "Isınma Soruları",
+        questions: [
+          "Hakkımdaki ilk izlenimin neydi?",
+          "Sence ne işle uğraşıyorum?",
+          "Sence hangi diziyi hiç sıkılmadan, art arda izliyorum?",
+          "Sence kedileri mi yoksa köpekleri mi daha çok seviyorum?",
+          "Otuz saniye boyunca birbirinizin gözlerinin içine bakın. Yeni fark ettiğiniz bir şey oldu mu? (Cesaret Kartı)",
+          "Sana birini hatırlatıyor muyum? Hatırlatıyorsam, kimi?",
+          "Bir filmde oynasaydım sence nasıl bir karakteri canlandırırdım?",
+          "Sence yaratıcı mı yoksa analitik biri miyim?",
+          "Gözlerini kapat. Üstüm ne renk? (Cesaret Kartı)",
+          "Ayakkabılarıma bakınca benimle ilgili ne söyleyebilirsin?",
+          "Sence kaç kez trafik cezası ödedim?",
+          "Sence en çok neye para harcıyorum?",
+          "Cümleyi tamamla: Sırf dış görünüşüne bakarak şunu diyebilirim ki…",
+          "Sence hayran olduğum ünlü kim?",
+          "Sence eski sevgilimin telefonunu karıştırdım mı hiç?",
+          "Bende gözüne ilk çarpan şey neydi?",
+          "Sence karaokede en çok hangi şarkıyı söylemeyi seviyorum?",
+          "Hakkımda hiçbir şey bilmeden, sırf dış görünüşüme bakarak bana bir hediye alacak olsan ne alırdın?",
+          "Telefonumdaki duvar kağıdına bakarak benim hakkımda ne söyleyebilirsin?",
+          "Sizi tanımayan birinin hakkınızda asla bilemeyeceği bir şeyi yazın ve yazdıklarınızı karşılaştırın.",
+          "Sence nazik biri miyim? Neden?",
+          "Sence birine kolayca aşık olur muyum? Neden?",
+          "Sence çocukken ne olmak istiyordum?",
+          "En sevdiğiniz cips markasını düşünün, üç deyince söyleyin. (Cesaret Kartı)",
+          "Sence okulda en çok hangi derste başarılıydım? Kaldığım ders olmuş mudur?",
+          "Sence en çok hangi iltifatı duyuyorum?",
+          "Sence sabah kuşu muyum yoksa gece kuşu mu?",
+          "Çocukken en sevdiğiniz çizgi film karakterini düşünün, üç deyince söyleyin. (Cesaret Kartı)",
+          "Beden dilim sana şu an ne söylüyor?",
+          "Instagram profilime bakarak hakkımda ne söyleyebilirsin?",
+          "Sence bitkilere iyi bakar mıyım, yoksa onları kurutur muyum? Açıkla.",
+          "Sence birinin adını dövme olarak yaktırır mıyım? Neden?",
+          "Sence lisede popüler miydim? Açıkla.",
+          "Sonuç-odaklı olma, anı yaşa. (Hatırlatma Kartı)",
+          "Sence işten kovuldum mu hiç? Eğer öyleyse, niçin?",
+          "Sence insanların gözünü korkutur muyum? Neden?",
+          "Gözlerini kapat. Gözlerin ne renk? (Cesaret Kartı)",
+          "Sence kamp yapmayı sever miyim? Neden?",
+          "Birbiriniz hakkında tahminde bulunun. (Cesaret Kartı)",
+          "Bende en tuhaf bulduğun şey ne?",
+          "Bende en çok ilgini çeken şey ne?"
+        ]
+      },
+      2: {
+        name: "Empati Soruları",
+        questions: [
+          "Zihnini bugünlerde en çok meşgul eden soru ne?",
+          "Boşlukları tamamla: Beni tanımayanlar ... biri olduğumu düşünür. Ama ben ... biriyimdir.",
+          "Anlaşılmaktansa anlamaya çalış. (Hatırlatma Kartı)",
+          "Biri sana 'Nasılsın?' diye sorduğunda, ne sıklıkta doğruyu söylersin?",
+          "Sahiden nasılsın?",
+          "Müzik listeni karışık çal. İlk şarkıyı açıkla! (Cesaret Kartı)",
+          "Hayatının bu dönemine bir başlık atacak olsan, ne derdin?",
+          "Bir yabancının hayatını değiştirdiği oldu mu?",
+          "Kendinde asla değiştirmek istemediğin şey ne?",
+          "Beş sene önceki sen bugünkü seni görse ne düşünürdü?",
+          "İkiniz de kendiniz hakkında utanç verici/ilginç bir gerçeği yazın. Taş kağıt makas oynayın. Kaybeden yazdığını okusun. (Cesaret Kartı)",
+          "Açıklanamaz bir şey yaşadığın oldu mu? Sence bir mucize miydi?",
+          "Sence mükemmel bir gün nasıl olmalı?",
+          "Son zamanlarda fikrini hiç değiştirdin mi?",
+          "Bugüne kadar aldığın en güzel iltifat neydi?",
+          "Hangi iltifatı daha sık almak isterdin?",
+          "Bugünlerde en çok ne için sabırsızlanıyorsun?",
+          "En eski ve en mutlu çocukluk hatıran ne?",
+          "En sevdiğin şarkının nakaratını söyle. Onu yaşa! (Cesaret Kartı)",
+          "En çok neyden korkuyorsun, başarısızlıktan mı, başarıdan mı? Neden?",
+          "Babanın adı ne? Onun hakkında tek bir şey söyle.",
+          "Hayattaki sizin için en önemli üç şeyi yazın, sonra da karşılaştırın. Otuz saniyeniz var! (Cesaret Kartı)",
+          "Aşık olmayı tek bir kelimeyle anlatman gerekse ne derdin?",
+          "En son ne zaman kendini şımarttın?",
+          "Fotoğraf galerindeki ilk fotoğrafı göster ve açıkla. (Cesaret Kartı)",
+          "Son bir yılda yaşadığın en mutlu an neydi?",
+          "Özlediğin bir his var mı?",
+          "Gücün yetseydi şu an kiminle, nerede, ne yapardın?",
+          "Karşındakiyle yer değiştir? (Cesaret Kartı)",
+          "Sence gerçekten olduğun kişiyle insanların seni gördüğü kişi aynı mı?",
+          "Çaresiz hissettiğin bir an oldu mu? Olduysa ne zamandı?",
+          "Herkesin sevdiği ama sizin sevmediğiniz bir şeyi düşünün. Üç deyince sesli söyleyin. (Cesaret Kartı)",
+          "Çocukluğundan gelen bir alışkanlığın var mı? Varsa ne?",
+          "Bugüne kadar en çok gurur duyduğun şey ne oldu?",
+          "Hayatında yolunda gittiğini düşündüğün ne var? Nerede bir terslik var?",
+          "İlk aşkının adı neydi? Sence ona neden aşık oldun?",
+          "Doğru soruyu sorabilmek önemlidir. Kendi sorunu sor. (Cesaret Kartı)",
+          "Herhangi bir şey hakkında kendini kandırıyor musun?",
+          "Hâlâ kendine kanıtlamaya çalıştığın ne(ler) var?",
+          "Annenin adı ne? Onunla ilgili en güzel şey ne?",
+          "Göz kırpmama yarışması. Gözünü ilk kırpan özel bir sorununu anlatır, diğeri de akıl verir. (Cesaret Kartı)",
+          "Hayatındaki bir kişiyi daha yakından tanıyabilseydin, o kim olurdu? Neden?",
+          "Canını en çok ne yaktı?",
+          "Şu an birini özlüyor musun? O da seni özlüyor mudur?",
+          "Sormaktan çok korktuğun, sormaya cüret edemeyeceğin bir soruyu sor. (Cesaret Kartı)",
+          "Hangi hayalinden vazgeçtin?",
+          "Hayran olduğun birini arayıp ona neden hayran olduğunu anlat! (Hoparlör açık olsun ki herkes duysun!) (Cesaret Kartı)",
+          "Annene en son söylediğin yalan neydi?",
+          "En son ne için ağladın?",
+          "Bir şeyi kabullen. (Cesaret Kartı)",
+          "Nasıl daha iyi bir insan olabilirsin?"
+        ]
+      },
+      3: {
+        name: "Diyalog Soruları",
+        questions: [
+          "Beni bir yabancıya nasıl anlatırdın?",
+          "Hakkımda en çok neye şaşırdın?",
+          "Bana alınacak en güzel hediye ne olurdu?",
+          "Karşındakine sarıl. Yalandan değil, içten! (Cesaret Kartı)",
+          "En çok neyime hayransın?",
+          "Hangi kitabı okumamı önerirsin?",
+          "Benim hakkımda anlamakta en zorlandığın şey ne?",
+          "Benden ne konuda tavsiye alırdın?",
+          "Sence hayatımı yoluna koyacak ne yapabilirim?",
+          "Bir müzik grubumuz olsaydı, adı ne olurdu?",
+          "Sana hangi konuda destek olabilirim?",
+          "Sence sosyal medya hesaplarım beni tam anlamıyla anlatıyor mu? Neden?",
+          "Sence şu an neyi duymaya ihtiyacım var?",
+          "Netflix'te ne izlememi önerirsin?",
+          "Sence süper gücüm ne?",
+          "Bu yıl vazgeçmek istediğiniz bir alışkanlığınızı yazın. Üç deyince yazdığınızı sesli okuyun. Sonra da yırtıp atın!",
+          "Konuştuklarımızdan ne ders çıkardın?",
+          "Karşındakinin seveceğini düşündüğün bir şarkı öner. (Cesaret Kartı)",
+          "Oyunda bana en yakın hissettiğin an neydi?",
+          "Benim yanımda rahat mısın? Daha rahat olabilmen için ne yapabilirim?",
+          "Sence en çok hangi konuda birbirimize benziyoruz?",
+          "Karşındakinin önümüzdeki hafta onu sırça köşkünden çıkartacak bir şey yapmasına önayak ol. (Cesaret Kartı)",
+          "Birlikte ne yapabiliriz?",
+          "Oyundaki iletişimimiz tek kelimeyle nasıl anlatırsın?",
+          "Hangi cevabım seni neşelendirirdi?",
+          "Karşındakine onun pek duymadığını düşündüğün bir iltifatta bulun. (Cesaret Kartı)",
+          "Oyun bittiğinde benimle ilgili neyi hep hatırlayacaksın?",
+          "En çok hangi soruyu cevaplamaktan korktun?",
+          "Bende kendinden bir şey görüyor musun?",
+          "Sence birbirimizi nasıl tamamlıyoruz?",
+          "Sence biz neden tanıştık?",
+          "Sence benim zaafım ne?",
+          "Karşındakinin Instagram profiline bak. Onu en iyi anlattığını düşündüğün fotoğrafı seç ve o fotoğrafı seçme nedenini açıkla. (Cesaret Kartı)",
+          "Ne olsa kendini bana daha yakın hissederdin?",
+          "Sence en çok neyden korkuyorum?",
+          "İçinde bulunduğunuz anda en çok neye minnet duyduğunuzu anlatın. (Cesaret Kartı)",
+          "Taş kağıt makas oynayın. Kazanan kaybedene ne sorarsa sorsun. Kaybeden yanıtlamak zorunda. (Cesaret Kartı)",
+          "Oyun sırasında kendinle ilgili ne öğrendin?",
+          "Birbirinize lakap takın. (Cesaret Kartı)",
+          "Sence kendimle ilgili bilmem gereken ne var, belki de farkında bile olmadığım?",
+          "Sence beni ben yapan ne?",
+          "Birlikte bir selfie çekin. (Cesaret Kartı)",
+          "Sence neyden vazgeçmeliyim?",
+          "Şu an nasıl hissettiğini tek kelimeyle anlat.",
+          "Bu yıl için bir hedef koyun ve yazın. Katlayıp değiş tokuş yapın. Birbirinizi yüreklendirin. (Cesaret Kartı)",
+          "Daha genç halinize bir not yazın, isterseniz karşılaştırın. Bir dakikanız var!"
+        ]
+      }
+    };
+
+    // Oyun Durumu
+    let currentLevel = 1;
+    let remainingQuestions = [];
+    let askedQuestions = [];
+
+    // DOM Elementleri
+    const questionDisplay = document.getElementById("questionDisplay");
+    const subheader = document.getElementById("subheader");
+    const levelIndicator = document.getElementById("levelIndicator");
+    const nextLevelBtn = document.getElementById("nextLevelBtn");
+    const questionCounter = document.getElementById("questionCounter");
+    const dots = document.querySelectorAll(".dot");
+
+    // Sayfa yüklendiğinde
+    window.onload = () => {
+      initLevel(currentLevel);
+    };
+
+    function initLevel(level) {
+      currentLevel = level;
+      remainingQuestions = [...levelData[level].questions];
+      askedQuestions = [];
+
+      // Tema güncelle
+      document.body.className = `level-${level}`;
+
+      // Başlıkları güncelle
+      subheader.textContent = `Level ${level}: ${levelData[level].name}`;
+      levelIndicator.textContent = `Level ${level}/3`;
+
+      // Buton metnini güncelle
+      const nextLevel = level === 3 ? 1 : level + 1;
+      nextLevelBtn.textContent = `Sonraki: Level ${nextLevel} - ${levelData[nextLevel].name}`;
+
+      // Progress dots güncelle
+      dots.forEach(dot => {
+        dot.classList.remove("active");
+        if (parseInt(dot.dataset.level) === level) {
+          dot.classList.add("active");
+        }
+      });
+
+      // Soruları karıştır ve göster
+      shuffleQuestions();
+      generateQuestion();
+    }
+
+    function shuffleQuestions() {
+      for (let i = remainingQuestions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [remainingQuestions[i], remainingQuestions[j]] = [remainingQuestions[j], remainingQuestions[i]];
+      }
+    }
+
+    function updateCounter() {
+      const total = levelData[currentLevel].questions.length;
+      const asked = askedQuestions.length;
+      questionCounter.textContent = `${asked}/${total} soru`;
+    }
+
+    function generateQuestion() {
+      // Eğer sorular bitmişse, yeniden karıştır
+      if (remainingQuestions.length === 0) {
+        remainingQuestions = [...askedQuestions];
+        askedQuestions = [];
+        shuffleQuestions();
+      }
+
+      if (!questionDisplay.classList.contains('hidden')) {
+        questionDisplay.style.animation = "fadeOut 0.5s ease";
+        questionDisplay.addEventListener('animationend', function handleFadeOut() {
+          questionDisplay.removeEventListener('animationend', handleFadeOut);
+          questionDisplay.classList.add('hidden');
+          showNewQuestion();
+        }, { once: true });
+      } else {
+        showNewQuestion();
+      }
+    }
+
+    function showNewQuestion() {
+      if (remainingQuestions.length > 0) {
+        const randomQuestion = remainingQuestions.pop();
+        askedQuestions.push(randomQuestion);
+
+        questionDisplay.textContent = randomQuestion;
+        questionDisplay.classList.remove('hidden');
+        questionDisplay.style.animation = "fadeIn 0.5s ease forwards";
+        updateCounter();
+      }
+    }
+
+    // Karta tıklanınca yeni soru göster
+    questionDisplay.addEventListener("click", generateQuestion);
+
+    // Sonraki level'a geç
+    nextLevelBtn.addEventListener("click", () => {
+      const nextLevel = currentLevel === 3 ? 1 : currentLevel + 1;
+      initLevel(nextLevel);
+    });
+
+    // Dot'lara tıklayınca ilgili level'a git
+    dots.forEach(dot => {
+      dot.addEventListener("click", () => {
+        const level = parseInt(dot.dataset.level);
+        if (level !== currentLevel) {
+          initLevel(level);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
