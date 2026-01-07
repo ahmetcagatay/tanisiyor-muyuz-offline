@@ -6,17 +6,17 @@ Yeni insanlarla tanışırken buzları kırmak ve derinlemesine sohbetler başla
 
 Bu oyun 3 aşamadan oluşur:
 
-1. **Level 1 - Isınma Soruları** (Sarı/Turuncu tema)
-   - Hafif, eğlenceli sorularla tanışmaya başlayın
-   - 41 soru
+1. **1. Aşama - Önyargını Kır** (Sarı/Turuncu tema)
+   - Karşındaki kişi hakkında küçük tahminlerde bulun
+   - 100 soru
 
-2. **Level 2 - Empati Soruları** (Mor tema)
-   - Daha derin, duygusal sorularla birbirinizi anlayın
-   - 51 soru
+2. **2. Aşama - Empati Kur** (Mor tema)
+   - Sadece dinle, yorum yapma, yer aç
+   - 150 soru
 
-3. **Level 3 - Diyalog Soruları** (Yeşil tema)
-   - Karşılıklı sorularla bağınızı güçlendirin
-   - 47 soru
+3. **3. Aşama - Diyalog Başlat** (Yeşil tema)
+   - Sohbet kendiliğinden aksın, herkes dahil olsun
+   - 150 soru
 
 ## Nasıl Oynanır?
 
