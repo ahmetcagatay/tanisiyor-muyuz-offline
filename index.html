@@ -64,15 +64,117 @@
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    .description {
-      color: #fff;
-      font-size: 1.05em;
-      font-weight: 400;
-      margin-bottom: 30px;
+    .info-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background-color: rgba(255, 248, 236, 0.3);
+      border: none;
+      color: #fff8ec;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .info-button:hover {
+      background-color: rgba(255, 248, 236, 0.5);
+      transform: scale(1.1);
+    }
+
+    /* Popup Overlay */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .popup-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .popup {
+      background-color: #fff8ec;
+      border-radius: 24px;
+      padding: 40px;
+      max-width: 360px;
+      margin: 20px;
       text-align: center;
-      max-width: 380px;
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .popup-overlay.active .popup {
+      transform: scale(1);
+    }
+
+    .popup-level {
+      font-size: 0.9em;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      opacity: 0.7;
+    }
+
+    body.level-1 .popup-level { color: #FDA203; }
+    body.level-2 .popup-level { color: #764ba2; }
+    body.level-3 .popup-level { color: #ee5a24; }
+
+    .popup-title {
+      font-size: 1.6em;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    body.level-1 .popup-title { color: #FDA203; }
+    body.level-2 .popup-title { color: #764ba2; }
+    body.level-3 .popup-title { color: #ee5a24; }
+
+    .popup-description {
+      font-size: 1.05em;
       line-height: 1.6;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+      color: #555;
+      margin-bottom: 30px;
+    }
+
+    .popup-button {
+      border: none;
+      border-radius: 12px;
+      padding: 14px 40px;
+      font-size: 1.1em;
+      font-weight: 600;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #fff8ec;
+    }
+
+    body.level-1 .popup-button { background: linear-gradient(135deg, #FECB00 0%, #FDA203 100%); }
+    body.level-2 .popup-button { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    body.level-3 .popup-button { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); }
+
+    .popup-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
     }
 
     .game-container {
@@ -211,10 +313,21 @@
   </style>
 </head>
 <body class="level-1">
+  <button class="info-button" id="infoBtn">?</button>
+
+  <!-- Popup -->
+  <div class="popup-overlay" id="popupOverlay">
+    <div class="popup">
+      <div class="popup-level" id="popupLevel">1. Aşama</div>
+      <div class="popup-title" id="popupTitle">Önyargını Kır</div>
+      <div class="popup-description" id="popupDescription"></div>
+      <button class="popup-button" id="popupBtn">Başlayalım</button>
+    </div>
+  </div>
+
   <div class="header">Tanışıyor muyuz?</div>
   <div class="pre-header" id="preHeader">1. Aşama</div>
   <div class="subheader" id="subheader">Önyargını Kır</div>
-  <div class="description" id="description"></div>
 
   <div class="game-container">
     <div id="questionDisplay" class="card hidden"></div>
@@ -663,14 +776,32 @@
     const questionDisplay = document.getElementById("questionDisplay");
     const preHeader = document.getElementById("preHeader");
     const subheader = document.getElementById("subheader");
-    const descriptionEl = document.getElementById("description");
     const nextLevelBtn = document.getElementById("nextLevelBtn");
     const dots = document.querySelectorAll(".dot");
+
+    // Popup Elementleri
+    const popupOverlay = document.getElementById("popupOverlay");
+    const popupLevel = document.getElementById("popupLevel");
+    const popupTitle = document.getElementById("popupTitle");
+    const popupDescription = document.getElementById("popupDescription");
+    const popupBtn = document.getElementById("popupBtn");
+    const infoBtn = document.getElementById("infoBtn");
 
     // Sayfa yüklendiğinde
     window.onload = () => {
       initLevel(currentLevel);
     };
+
+    function showPopup() {
+      popupLevel.textContent = `${currentLevel}. Aşama`;
+      popupTitle.textContent = levelData[currentLevel].name;
+      popupDescription.textContent = levelData[currentLevel].description;
+      popupOverlay.classList.add("active");
+    }
+
+    function hidePopup() {
+      popupOverlay.classList.remove("active");
+    }
 
     function initLevel(level) {
       currentLevel = level;
@@ -683,7 +814,6 @@
       // Başlıkları güncelle
       preHeader.textContent = `${level}. Aşama`;
       subheader.textContent = levelData[level].name;
-      descriptionEl.textContent = levelData[level].description;
 
       // Buton metnini güncelle
       if (level === 3) {
@@ -703,10 +833,31 @@
         }
       });
 
-      // Soruları karıştır ve göster
+      // Popup göster
+      showPopup();
+
+      // Soruları karıştır
       shuffleQuestions();
-      generateQuestion();
     }
+
+    // Popup butonuna tıklayınca
+    popupBtn.addEventListener("click", () => {
+      hidePopup();
+      generateQuestion();
+    });
+
+    // Info butonuna tıklayınca popup'ı tekrar aç
+    infoBtn.addEventListener("click", showPopup);
+
+    // Overlay'e tıklayınca kapat (popup dışına tıklama)
+    popupOverlay.addEventListener("click", (e) => {
+      if (e.target === popupOverlay) {
+        hidePopup();
+        if (askedQuestions.length === 0) {
+          generateQuestion();
+        }
+      }
+    });
 
     function shuffleQuestions() {
       for (let i = remainingQuestions.length - 1; i > 0; i--) {
