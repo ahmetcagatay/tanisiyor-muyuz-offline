@@ -815,11 +815,14 @@
         nextLevelBtn.textContent = `${level + 1}. Aşamaya Geç`;
       }
 
-      // Önceki aşama linkini güncelle (1. aşamada gösterme)
+      // Önceki aşama linkini güncelle (1. aşamada görünmez ama yer kaplasın)
       if (level === 1) {
-        prevLevelLink.style.display = 'none';
+        prevLevelLink.style.visibility = 'hidden';
+        prevLevelLink.style.pointerEvents = 'none';
+        prevLevelLink.textContent = '← 3. Aşamaya dön';
       } else {
-        prevLevelLink.style.display = 'inline';
+        prevLevelLink.style.visibility = 'visible';
+        prevLevelLink.style.pointerEvents = 'auto';
         prevLevelLink.textContent = `← ${level - 1}. Aşamaya dön`;
       }
 
